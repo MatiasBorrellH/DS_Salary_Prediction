@@ -57,3 +57,42 @@ def drop_unnecessary_columns(dataset, columns_to_drop=None):
         columns_to_drop = ["salary_currency", "salary"]
     dataset.drop(columns=columns_to_drop, axis=1, inplace=True)
     return dataset
+
+import pandas as pd
+
+def remove_outliers_iqr(dataframe, column=None, multiplier=1.5):
+    """
+    Removes outliers from a dataset using the IQR technique.
+
+    Parameters:
+    - dataframe (pd.DataFrame): The DataFrame to process.
+    - column (str or None): The column to filter outliers from. If None, applies to all numerical columns.
+    - multiplier (float): The IQR multiplier to define outliers. Default is 1.5.
+
+    Returns:
+    - pd.DataFrame: The filtered DataFrame with outliers removed.
+    """
+    if column:
+        # Compute IQR for the specific column
+        Q1 = dataframe[column].quantile(0.25)
+        Q3 = dataframe[column].quantile(0.75)
+        IQR = Q3 - Q1
+        lower_bound = Q1 - multiplier * IQR
+        upper_bound = Q3 + multiplier * IQR
+
+        # Filter rows within the bounds
+        return dataframe[(dataframe[column] >= lower_bound) & (dataframe[column] <= upper_bound)]
+    else:
+        # Compute IQR for all numerical columns
+        filtered_data = dataframe.copy()
+        for col in dataframe.select_dtypes(include='number').columns:
+            Q1 = dataframe[col].quantile(0.25)
+            Q3 = dataframe[col].quantile(0.75)
+            IQR = Q3 - Q1
+            lower_bound = Q1 - multiplier * IQR
+            upper_bound = Q3 + multiplier * IQR
+
+            # Filter rows for the current column
+            filtered_data = filtered_data[(filtered_data[col] >= lower_bound) & (filtered_data[col] <= upper_bound)]
+        
+        return filtered_data

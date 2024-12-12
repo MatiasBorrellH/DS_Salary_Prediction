@@ -91,27 +91,27 @@ def add_inflation_index(dataset, year_column='work_year', residence_column='empl
     return dataset
 
 
-def add_salary_density(dataset, salary_column='salary_in_usd', job_column='job_title'):
+def add_salary_density(dataset, salary_column='salary_in_usd', experience_column='years_of_experience'):
     """
-    Adds a column measuring salary density per role (z-score within the same job_title).
+    Adds a column measuring salary density (z-score) grouped by years of experience.
 
     Parameters:
     - dataset (pd.DataFrame): The DataFrame containing the data.
     - salary_column (str): Name of the column containing salaries.
-    - job_column (str): Name of the column containing job titles.
+    - experience_column (str): Name of the column representing years of experience.
 
     Returns:
-    - pd.DataFrame: The DataFrame with the new column 'salary_density'.
+    - pd.DataFrame: The DataFrame with the new column 'salary_density_by_experience'.
     """
-    # Calculate mean and standard deviation by 'job_title'
-    salary_stats = dataset.groupby(job_column)[salary_column].agg(['mean', 'std']).reset_index()
-    salary_stats.columns = [job_column, 'mean_salary', 'std_salary']
+    # Calculate mean and standard deviation by years_of_experience
+    salary_stats = dataset.groupby(experience_column)[salary_column].agg(['mean', 'std']).reset_index()
+    salary_stats.columns = [experience_column, 'mean_salary', 'std_salary']
 
     # Merge statistics with the original dataset
-    dataset = dataset.merge(salary_stats, on=job_column, how='left')
+    dataset = dataset.merge(salary_stats, on=experience_column, how='left')
 
     # Calculate salary density
-    dataset['salary_density'] = (
+    dataset['salary_density_by_experience'] = (
         (dataset[salary_column] - dataset['mean_salary']) / dataset['std_salary']
     ).fillna(0)  # Handle NaN when std_salary is 0
 
