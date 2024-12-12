@@ -21,35 +21,24 @@ def map_experience_level(level):
         return None  # Handle unexpected values
 
 
-def add_avg_salary_by_job(dataset, salary_column='salary_in_usd', job_column='job_title'):
+def add_job_title_frequency(dataset, job_column='job_title'):
     """
-    Adds a column with the average salary for each job title.
+    Adds a column with the frequency of each job title.
 
     Parameters:
     - dataset (pd.DataFrame): The DataFrame containing the data.
-    - salary_column (str): Name of the column containing salaries.
     - job_column (str): Name of the column containing job titles.
 
     Returns:
-    - pd.DataFrame: The DataFrame with the new column 'avg_salary_by_job', rounded to the nearest integer.
+    - pd.DataFrame: The DataFrame with the new column 'job_title_frequency'.
     """
-    # Check if the specified columns exist in the dataset
-    if salary_column not in dataset.columns or job_column not in dataset.columns:
-        raise ValueError(f"The columns '{salary_column}' and/or '{job_column}' do not exist in the dataset.")
-    
-    # Calculate and add the average salary column
-    dataset['avg_salary_by_job'] = (
-        dataset.groupby(job_column)[salary_column]
-        .transform('mean')
-        .round(0)
-        .astype(int)
-    )
+    dataset['job_title_frequency'] = dataset[job_column].map(dataset[job_column].value_counts())
     return dataset
 
 
 def add_local_employee_feature(dataset, employee_location_col='employee_residence', company_location_col='company_location'):
     """
-    Adds a column indicating if the employee is working locally in the company's country (1 for local, 0 for foreign).
+    Adds a column indicating if the employee is working locally in the company's country (1 for local, 0 for foreign).” Cambialo por “Adds a column indicating if the employee is employed by a company in his/her home country (compares employee_residence with comany_location, 1 for local, 0 for foreign).
 
     Parameters:
     - dataset (pd.DataFrame): The DataFrame containing the data.
@@ -69,38 +58,37 @@ def add_local_employee_feature(dataset, employee_location_col='employee_residenc
     return dataset
 
 
-def adjust_salary(row):
+def add_inflation_index(dataset, year_column='work_year', residence_column='employee_residence', base_year=2024):
     """
-    Adjusts salary based on annual inflation rates.
-    Uses different inflation indices for the United States and global rates.
+    Adds an inflation adjustment index based on the work year and country.
 
     Parameters:
-    - row (pd.Series): A row from the DataFrame containing 'work_year', 'salary_in_usd', and 'employee_residence'.
+    - dataset (pd.DataFrame): The DataFrame containing the data.
+    - year_column (str): Column indicating the work year.
+    - residence_column (str): Column indicating the employee's country of residence.
+    - base_year (int): The year to adjust all data to (default: 2024).
 
     Returns:
-    - float: Salary adjusted for inflation.
+    - pd.DataFrame: The DataFrame with a new column 'inflation_index'.
     """
     us_inflation_rates = {2019: 0.0181, 2020: 0.0123, 2021: 0.0470, 2022: 0.065, 2023: 0.034}
     global_inflation_rates = {2019: 0.0219, 2020: 0.0192, 2021: 0.0350, 2022: 0.088, 2023: 0.070}
-    
-    year = row['work_year']
-    original_salary = row['salary_in_usd']
-    residence = row['employee_residence']  # Employee's country of residence
 
-    # If it is the most recent year, no adjustment is needed
-    if year == 2024:
-        return original_salary
+    def calculate_index(year, residence):
+        """Calculate cumulative inflation index for a given year and country."""
+        index = 1.0
+        for y in range(year, base_year):
+            if residence == "United States":
+                inflation_rate = us_inflation_rates.get(y, 0)
+            else:
+                inflation_rate = global_inflation_rates.get(y, 0)
+            index *= (1 + inflation_rate)
+        return index
 
-    adjusted_salary = original_salary
-    for y in range(year, 2024):
-        if residence == "United States":
-            inflation_rate = us_inflation_rates.get(y, 0)  # US inflation index
-        else:
-            inflation_rate = global_inflation_rates.get(y, 0)  # Global inflation index
-        
-        adjusted_salary *= (1 + inflation_rate)
-    
-    return adjusted_salary
+    dataset['inflation_index'] = dataset.apply(
+        lambda row: calculate_index(row[year_column], row[residence_column]), axis=1
+    )
+    return dataset
 
 
 def add_salary_density(dataset, salary_column='salary_in_usd', job_column='job_title'):
