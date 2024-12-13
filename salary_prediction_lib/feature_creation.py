@@ -109,3 +109,81 @@ def add_salary_density(dataset, salary_column='salary_in_usd', experience_column
     return dataset
 
 
+def save_salary_density_by_job(dataset, job_column='job_title', density_column='salary_density_by_experience', stats_path='salary_density_by_job.pkl'):
+    """
+    Computes and saves the average salary density by job title.
+
+    Parameters:
+    - dataset (pd.DataFrame): The DataFrame containing the data.
+    - job_column (str): Name of the column representing job titles.
+    - density_column (str): Name of the column containing salary density values.
+    - stats_path (str): Path to save the computed stats.
+
+    Returns:
+    - dict: A dictionary of job titles mapped to their average salary density.
+    """
+    import joblib
+
+    # Calculate average salary density by job title
+    job_salary_density = dataset.groupby(job_column)[density_column].mean().to_dict()
+
+    # Save the stats as a pickle file
+    joblib.dump(job_salary_density, stats_path)
+    print(f"Salary density stats saved to {stats_path}")
+
+    return job_salary_density
+
+
+
+
+def map_job_density(dataset, job_column='job_title', stats_path='salary_density_by_job.pkl'):
+    """
+    Maps precomputed salary density stats to a dataset based on job titles.
+
+    Parameters:
+    - dataset (pd.DataFrame): The dataset to process.
+    - job_column (str): The column containing job titles.
+    - stats_path (str): Path to the saved salary_density_by_job.pkl file.
+
+    Returns:
+    - pd.DataFrame: The dataset with a new column 'avg_salary_density_by_job'.
+    """
+    import joblib
+    try:
+        # Load precomputed salary density stats
+        job_salary_density = joblib.load(stats_path)
+        # Map the stats to the dataset
+        dataset['salary_density'] = dataset[job_column].map(job_salary_density).fillna(0)
+    except FileNotFoundError:
+        raise FileNotFoundError(f"The file '{stats_path}' does not exist. Ensure the stats are generated and saved during training.")
+    except Exception as e:
+        raise RuntimeError(f"An error occurred while loading salary density stats: {e}")
+    
+    return dataset
+
+
+
+def create_features(dataset, stats_path='salary_density_by_job.pkl'):
+    """
+    Applies all feature creation steps to the dataset.
+
+    Parameters:
+    - dataset (pd.DataFrame): The dataset to process.
+    - stats_path (str): Path to the saved salary_density_by_job.pkl file.
+
+    Returns:
+    - pd.DataFrame: The dataset with all new features added.
+    """
+    # Map experience levels to numeric values
+    dataset['years_of_experience'] = dataset['experience_level'].map(map_experience_level)
+
+    # Add local employee feature
+    dataset = add_local_employee_feature(dataset, employee_location_col='employee_residence', company_location_col='company_location')
+
+    # Add inflation index
+    dataset = add_inflation_index(dataset, year_column='work_year', residence_column='employee_residence')
+
+    # Map salary density by job title
+    dataset = map_job_density(dataset, job_column='job_title', stats_path=stats_path)
+
+    return dataset
