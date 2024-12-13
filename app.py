@@ -4,10 +4,9 @@ import pandas as pd
 import lightgbm as lgb
 import joblib
 from sklearn.preprocessing import LabelEncoder
-
 from feature_creation import create_features
-    
 from pre_processing import preprocess_data
+
 
 # Load the trained model
 try:
@@ -42,9 +41,9 @@ async def predict(payload: PredictionRequest):
         catcol = ["experience_level", "employment_type", "job_title", 
                 "employee_residence", "remote_ratio", "company_location", "company_size"]
 
-        # Apply Label Encoding to each categorical column
+        # Apply same Label Encoding from train to each categorical column
         for col in catcol:
-            le = LabelEncoder()  # Create a new LabelEncoder instance for each column
+            le = joblib.load("data_encoder.pkl")  
             input_data_feat[col] = le.fit_transform(input_data_feat[col])
 
 
