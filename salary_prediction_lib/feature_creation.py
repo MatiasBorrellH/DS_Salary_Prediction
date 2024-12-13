@@ -58,32 +58,20 @@ def add_local_employee_feature(dataset, employee_location_col='employee_residenc
     return dataset
 
 
-def add_inflation_index(dataset, year_column='work_year', residence_column='employee_residence', base_year=2024):
+def add_inflation_index(dataset, year_column='work_year', residence_column='employee_residence'):
     """
     Adds an inflation adjustment index based on the work year and country.
-
-    Parameters:
-    - dataset (pd.DataFrame): The DataFrame containing the data.
-    - year_column (str): Column indicating the work year.
-    - residence_column (str): Column indicating the employee's country of residence.
-    - base_year (int): The year to adjust all data to (default: 2024).
-
-    Returns:
-    - pd.DataFrame: The DataFrame with a new column 'inflation_index'.
     """
     us_inflation_rates = {2019: 0.0181, 2020: 0.0123, 2021: 0.0470, 2022: 0.065, 2023: 0.034}
     global_inflation_rates = {2019: 0.0219, 2020: 0.0192, 2021: 0.0350, 2022: 0.088, 2023: 0.070}
 
     def calculate_index(year, residence):
-        """Calculate cumulative inflation index for a given year and country."""
-        index = 1.0
-        for y in range(year, base_year):
-            if residence == "United States":
-                inflation_rate = us_inflation_rates.get(y, 0)
-            else:
-                inflation_rate = global_inflation_rates.get(y, 0)
-            index *= (1 + inflation_rate)
-        return index
+        """Calculate the inflation rate for a specific year and residence."""
+        if residence == "United States":
+            inflation_rate = us_inflation_rates.get(year, 0)
+        else:
+            inflation_rate = global_inflation_rates.get(year, 0)
+        return 1 + inflation_rate
 
     dataset['inflation_index'] = dataset.apply(
         lambda row: calculate_index(row[year_column], row[residence_column]), axis=1
