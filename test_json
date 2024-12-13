@@ -1,0 +1,17 @@
+{
+  "data": [
+    {
+      "work_year": 2024,
+      "experience_level": "Senior Level",
+      "employment_type": "Full Time",
+      "job_title": "Data Analyst",
+      "employee_residence": "United States",
+      "remote_ratio": "Non Remote Work",
+      "company_location": "United States",
+      "company_size": "Medium",
+      "years_of_experience": 10,
+      "is_local_employee": 1,
+      "inflation_index": 1.0
+    }
+  ]
+}

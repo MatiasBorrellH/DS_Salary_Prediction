@@ -121,3 +121,28 @@ def add_salary_density(dataset, salary_column='salary_in_usd', experience_column
     return dataset
 
 
+def create_features(dataset):
+    """
+    Applies all feature creation steps to the dataset.
+
+    Parameters:
+    - dataset (pd.DataFrame): The dataset to process.
+
+    Returns:
+    - pd.DataFrame: The dataset with all new features added.
+    """
+    # Map experience levels to numeric values
+    dataset['years_of_experience'] = dataset['experience_level'].map(map_experience_level)
+
+    # Add job title frequency
+    #dataset = add_job_title_frequency(dataset)
+
+    # Add local employee feature
+    dataset = add_local_employee_feature(dataset, employee_location_col='employee_residence', company_location_col='company_location')
+
+    # Add inflation index
+    dataset = add_inflation_index(dataset, year_column='work_year', residence_column='employee_residence')
+
+    return dataset
+
+

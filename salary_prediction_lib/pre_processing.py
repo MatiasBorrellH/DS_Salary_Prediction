@@ -96,3 +96,31 @@ def remove_outliers_iqr(dataframe, column=None, multiplier=1.5):
             filtered_data = filtered_data[(filtered_data[col] >= lower_bound) & (filtered_data[col] <= upper_bound)]
         
         return filtered_data
+
+
+    
+import pandas as pd
+
+def preprocess_data(dataset):
+    """
+    Preprocess the dataset by applying all necessary transformations.
+
+    Parameters:
+    - dataset (pd.DataFrame): The input dataset.
+
+    Returns:
+    - pd.DataFrame: The preprocessed dataset.
+    """
+    # Convert country codes to full country names
+    dataset = convert_country_codes(dataset, employee_column='employee_residence', company_column='company_location')
+
+    # Replace abbreviations
+    dataset = replace_abbreviations(dataset)
+
+    # Drop unnecessary columns
+    #dataset = drop_unnecessary_columns(dataset)
+
+    # Remove outliers (if applicable)
+    #dataset = remove_outliers_iqr(dataset, column=None, multiplier=1.5)  # Adjust column and multiplier as needed
+
+    return dataset
