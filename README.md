@@ -2,20 +2,20 @@
 A Scalable Library for a Data Science project, focused on predict salaries in Data related jobs. 
 
 Includes:  
-  Data provided by aijobs.net \
+  Data provided by aijobs.net. \
   Prediction Pipeline. \
-  Readme file with instruction to scale the project. \
+  Readme file with instruction on how to scale the project. \
   API for quick predictions. \
-  Test JSON file.
+  JSON test file.
 
-Steps to:
+Instructions:
 
-- Do a single value predicction:
+- For a single value predicction:
   1. Open uvicorn using the terminal: uvicorn app:app --reload
   2. Open in your browser http://127.0.0.1:8000/docs# and go to the predict endpoint.
   3. Fill the data as is shown in the file test_json
 
-- Do multiple values prediction:
+- For multiple values prediction:
   1. Open uvicorn using the terminal: uvicorn app:app --reload
   2. Go to the file post_request.py 
   3. Change the route of 'test_json' for the location of your JSON file with the data.
