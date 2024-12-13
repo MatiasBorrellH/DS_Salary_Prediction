@@ -12,6 +12,19 @@
       "years_of_experience": 10,
       "is_local_employee": 1,
       "inflation_index": 1.0
+    },
+    {
+      "work_year": 2023,
+      "experience_level": "Mid Level",
+      "employment_type": "Part Time",
+      "job_title": "Data Scientist",
+      "employee_residence": "Canada",
+      "remote_ratio": "Fully Remote",
+      "company_location": "Canada",
+      "company_size": "Large",
+      "years_of_experience": 5,
+      "is_local_employee": 1,
+      "inflation_index": 1.034
     }
   ]
 }
