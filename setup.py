@@ -4,7 +4,7 @@ setup(
     name="salary_prediction_lib",
     version="0.1",
     packages=find_packages(),
-    install_requires=['country_converter', 'lightgbm', 'sklearn', 'numpy', 'random', 'pandas'],  
+    install_requires=['country_converter', 'lightgbm', 'numpy', 'pandas'],  
     author="Tu Nombre",
     author_email="anastasiia.chernavskaia@bse.eu, matias.borrell@bse.eu, soledad.monge@bse.eu",
     description="Library for data related roles salary prediction.",
