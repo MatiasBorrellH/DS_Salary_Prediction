@@ -40,4 +40,9 @@ Instructions:
   3. Use this call this new function inside the create_features function.
   4. Add the name of your new function to the __init__ file of the library.
 
+- Enrich The data:
+  1.  In order to add more you will need to download aijobs.net latest csv file.
+  2. Substitute the data.csv file located in the data folder.
+  3. Run the sd_salary_main.ipynb notebook 
+
 
