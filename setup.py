@@ -5,7 +5,7 @@ setup(
     version="0.1",
     packages=find_packages(),
     install_requires=['country_converter', 'lightgbm', 'numpy', 'pandas'],  
-    author="Tu Nombre",
+    author="Matias Borrell, Nastia Chernavskaia, Soledad Monge.",
     author_email="anastasiia.chernavskaia@bse.eu, matias.borrell@bse.eu, soledad.monge@bse.eu",
     description="Library for data related roles salary prediction.",
     long_description=open("README.md").read(),
